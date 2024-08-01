@@ -49,7 +49,7 @@ class UserProfileDetailAPIView(generics.RetrieveAPIView):
 class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly,)
+    permission_classes = (IsOwnerOrReadOnly,)
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
