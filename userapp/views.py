@@ -14,7 +14,6 @@ from .models import Profile
 from .permissions import IsOwnerOrReadOnly
 from .utils import generate_qr_code
 
-
 User = get_user_model()
 
 
@@ -41,11 +40,16 @@ class UserProfileDetailAPIView(generics.RetrieveAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = (AllowAny,)
 
+    def get_object(self):
+        user = get_object_or_404(User, username=self.kwargs['username'])
+        profile = Profile.objects.get(user=user)
+        return profile
+
 
 class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAuthenticated, IsOwnerOrReadOnly,)
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
@@ -53,7 +57,6 @@ class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         return Profile.objects.get(user=self.request.user)
-
 
 # class ProfileView(APIView):
 #     def get(self, request, *args, **kwargs):
@@ -79,6 +82,3 @@ class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
 #             serializer.save()
 #             return Response(serializer.data, status=status.HTTP_200_OK)
 #         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-

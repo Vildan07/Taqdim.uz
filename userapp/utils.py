@@ -4,7 +4,7 @@ from django.core.files import File
 
 
 def generate_qr_code(profile):
-    url = f"http://192.168.137.221:8000/{profile.user.username}"
+    url = f"http://taqdim.uz/{profile.user.username}"
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
