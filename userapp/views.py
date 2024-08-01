@@ -25,7 +25,7 @@ class RegisterView(generics.CreateAPIView):
 
 class UserProfileCreateAPIView(generics.CreateAPIView):
     queryset = Profile.objects.all()
-    permission_classes = (IsOwnerOrReadOnly, IsAuthenticated,)
+    permission_classes = (IsOwnerOrReadOnly,)
     serializer_class = UserProfileCreateSerializer
 
     def perform_create(self, serializer):
