@@ -7,14 +7,21 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, authenticate
 
 from .serializers import *
 from .models import Profile
 from .permissions import IsOwnerOrReadOnly
 from .utils import generate_qr_code
 
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenObtainPairView
+
 User = get_user_model()
+
+
+class CustomTokenObtainPairView(TokenObtainPairView):
+    serializer_class = CustomTokenObtainPairSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -25,7 +32,7 @@ class RegisterView(generics.CreateAPIView):
 
 class UserProfileCreateAPIView(generics.CreateAPIView):
     queryset = Profile.objects.all()
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsAuthenticated,)
     serializer_class = UserProfileCreateSerializer
 
     def perform_create(self, serializer):
@@ -41,15 +48,16 @@ class UserProfileDetailAPIView(generics.RetrieveAPIView):
     permission_classes = (AllowAny,)
 
     def get_object(self):
-        user = get_object_or_404(User, username=self.kwargs['username'])
-        profile = Profile.objects.get(user=user)
+        # user = get_object_or_404(User, username=self.kwargs['username'])
+        username = self.request.query_params.get('username'.lower())
+        profile = Profile.objects.get(username=username)
         return profile
 
 
 class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsAuthenticated,)
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)

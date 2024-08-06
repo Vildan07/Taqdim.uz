@@ -3,8 +3,24 @@ from django.contrib.auth import get_user_model
 from .models import Profile
 from .utils import generate_qr_code
 
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
 
 User = get_user_model()
+
+
+class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
+    def validate(cls, attrs):
+        data = super().validate(attrs)
+        user = cls.user
+
+        # Add custom fields to the token response if needed
+        data.update({
+            # 'username': user.username,
+            # 'password': user.password,
+            # Add other fields as needed
+        })
+        return data
 
 
 class UserSerializer(serializers.ModelSerializer):
