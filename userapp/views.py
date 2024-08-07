@@ -40,31 +40,33 @@ class UserProfileCreateAPIView(generics.CreateAPIView):
         qr_code_image = generate_qr_code(profile)
         profile.qr_code.save(f'{profile.user.username}_qr.png', qr_code_image)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-
-class UserProfileDetailAPIView(generics.RetrieveAPIView):
-    queryset = Profile.objects.all()
-    serializer_class = UserProfileSerializer
-    permission_classes = (AllowAny,)
-
-    def get_object(self):
-        # user = get_object_or_404(User, username=self.kwargs['username'])
-        username = self.request.query_params.get('username'.lower())
-        profile = Profile.objects.get(username=username)
-        return profile
+#
+#
+# class UserProfileDetailAPIView(generics.RetrieveAPIView):
+#     queryset = Profile.objects.all()
+#     serializer_class = UserProfileSerializer
+#     permission_classes = (AllowAny,)
+#
+#     def get_object(self):
+#         username = self.kwargs.get('username'.lower())
+#         profile = Profile.objects.get(username=username)
+#         return profile
 
 
 class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsOwnerOrReadOnly,)
+    lookup_field = 'username'
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_object(self):
-        return Profile.objects.get(user=self.request.user)
+        username = self.kwargs.get('username'.lower())
+        profile = get_object_or_404(Profile, username=username)
+        return profile
 
 # class ProfileView(APIView):
 #     def get(self, request, *args, **kwargs):
