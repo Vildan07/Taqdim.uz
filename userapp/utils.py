@@ -1,10 +1,11 @@
 import qrcode
 from io import BytesIO
 from django.core.files import File
+from django.conf import settings
 
 
 def generate_qr_code(profile):
-    url = f"http://taqdim.uz/{profile.user.username}"
+    url = f"{settings.BASE_URL}/{profile.username}"
     qr = qrcode.QRCode(
         version=1,
         error_correction=qrcode.constants.ERROR_CORRECT_L,
