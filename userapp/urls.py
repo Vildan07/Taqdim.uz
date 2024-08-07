@@ -7,6 +7,6 @@ urlpatterns = [
     path('login/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
 
     path('profile/create/', UserProfileCreateAPIView.as_view(), name='profile-create'),
-    # path('profile/detail/<str:username>/', UserProfileUpdateDeleteAPIView.as_view(), name='profile-detail'),
+    path('profile/list/', UserProfileListAPIView.as_view(), name='profile-list'),
     path('profile/<str:username>/', UserProfileUpdateDeleteAPIView.as_view(), name='profile-update-delete'),
 ]

@@ -56,7 +56,7 @@ class UserProfileCreateAPIView(generics.CreateAPIView):
 class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (IsOwnerOrReadOnly,)
+    permission_classes = (IsAuthenticated,)
     lookup_field = 'username'
 
     def perform_update(self, serializer):
@@ -67,6 +67,20 @@ class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
         username = self.kwargs.get('username'.lower())
         profile = get_object_or_404(Profile, username=username)
         return profile
+
+
+class UserProfileListAPIView(generics.ListAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = UserProfileSerializer
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request):
+        user = request.user
+        profiles = Profile.objects.filter(user=user)
+        serializer = UserProfileSerializer(profiles, many=True)
+        return Response(serializer.data)
+
+
 
 # class ProfileView(APIView):
 #     def get(self, request, *args, **kwargs):
