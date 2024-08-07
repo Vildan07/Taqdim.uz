@@ -74,7 +74,7 @@ class UserProfileListAPIView(generics.ListAPIView):
     serializer_class = UserProfileSerializer
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
+    def get(self, request, *args, **kwargs):
         user = request.user
         profiles = Profile.objects.filter(user=user)
         serializer = UserProfileSerializer(profiles, many=True)

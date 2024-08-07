@@ -26,7 +26,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['password', 'username', 'email', ]
+        fields = ['username', 'password']
         extra_kwargs = {'password': {'write_only': True}}
 
     def create(self, validated_data):
@@ -38,7 +38,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = '__all__'
-        extra_kwargs = {'user': {'read_only': True}}
+        extra_kwargs = {'user': {'read_only': True}, 'username': {'read_only': True}}
 
 
 class UserProfileCreateSerializer(serializers.ModelSerializer):
@@ -54,10 +54,3 @@ class UserProfileCreateSerializer(serializers.ModelSerializer):
         profile.qr_code.save(f'{profile.user.username}_qr.png', qr_code_image)
         return profile
 
-
-# class ProfileSerializer(serializers.ModelSerializer):
-#     user = serializers.HiddenField(default=serializers.CurrentUserDefault())
-#
-#     class Meta:
-#         model = Profile
-#         fields = '__all__'
