@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Profile
+from .models import Profile, SocialMediaIcon
 from .utils import generate_qr_code
 
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
@@ -54,3 +54,8 @@ class UserProfileCreateSerializer(serializers.ModelSerializer):
         profile.qr_code.save(f'{profile.user.username}_qr.png', qr_code_image)
         return profile
 
+
+class SocialMediaIconSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SocialMediaIcon
+        fields = '__all__'

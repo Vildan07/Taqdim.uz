@@ -23,3 +23,11 @@ class Profile(models.Model):
     def save(self, *args, **kwargs):
         self.username = self.username.lower()
         super().save(*args, **kwargs)
+
+
+class SocialMediaIcon(models.Model):
+    url_pattern = models.CharField(max_length=255, unique=True)
+    svg = models.FileField(upload_to='svgs/', blank=True, null=True)
+
+    def __str__(self):
+        return self.url_pattern

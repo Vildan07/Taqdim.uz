@@ -1,3 +1,5 @@
+import re
+
 from django.shortcuts import render
 from django.shortcuts import get_object_or_404
 
@@ -40,17 +42,6 @@ class UserProfileCreateAPIView(generics.CreateAPIView):
         qr_code_image = generate_qr_code(profile)
         profile.qr_code.save(f'{profile.user.username}_qr.png', qr_code_image)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
-#
-#
-# class UserProfileDetailAPIView(generics.RetrieveAPIView):
-#     queryset = Profile.objects.all()
-#     serializer_class = UserProfileSerializer
-#     permission_classes = (AllowAny,)
-#
-#     def get_object(self):
-#         username = self.kwargs.get('username'.lower())
-#         profile = Profile.objects.get(username=username)
-#         return profile
 
 
 class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -81,28 +72,27 @@ class UserProfileListAPIView(generics.ListAPIView):
         return Response(serializer.data)
 
 
-
-# class ProfileView(APIView):
-#     def get(self, request, *args, **kwargs):
-#         profile = Profile.objects.get(user=request.user)
-#         serializer = ProfileSerializer(profile)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
+from rest_framework import viewsets
 
 
-# class ProfileDetailView(APIView):
-#     permission_classes = (AllowAny,)
-#
-#     def get(self, request, username, *args, **kwargs):
-#         profile = get_object_or_404(Profile, username=username)
-#         serializer = ProfileSerializer(profile)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-#
-#
-# class ProfileUpdateView(APIView):
-#     def put(self, request, *args, **kwargs):
-#         profile = Profile.objects.get(user=request.user)
-#         serializer = ProfileSerializer(profile, data=request.data, partial=True)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_200_OK)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class SocialMediaIconView(APIView):
+    def get(self, request, format=None):
+        url = request.query_params.get('url')
+        id = request.query_params.get('id')
+
+        if url:
+            icons = SocialMediaIcon.objects.all()
+
+            for icon in icons:
+                if re.match(icon.url_pattern, url):
+                    serializer = SocialMediaIconSerializer(icon)
+                    return Response(serializer.data)
+
+            return Response({'error': 'Иконка не найдена'}, status=status.HTTP_404_NOT_FOUND)
+        elif id:
+            icon = get_object_or_404(SocialMediaIcon, pk=id)
+            serializer = SocialMediaIconSerializer(icon)
+            return Response(serializer.data)
+
+        else:
+            return Response({'error': 'Необходимо указать URL'}, status=status.HTTP_400_BAD_REQUEST)
