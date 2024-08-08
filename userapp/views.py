@@ -72,9 +72,6 @@ class UserProfileListAPIView(generics.ListAPIView):
         return Response(serializer.data)
 
 
-from rest_framework import viewsets
-
-
 class SocialMediaIconView(APIView):
     def get(self, request, format=None):
         url = request.query_params.get('url')
