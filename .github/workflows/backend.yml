@@ -22,6 +22,7 @@ jobs:
           script: |
             # Navigate to the project directory
             cd /var/www/taq/backend
+            mkdir test
 
             # Pull the latest changes from the repository
             git pull origin main
