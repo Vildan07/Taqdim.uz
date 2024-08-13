@@ -44,6 +44,16 @@ class UserProfileCreateAPIView(generics.CreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
+class UserProfileDetailAPIView(generics.RetrieveAPIView):
+    queryset = Profile.objects.all()
+    serializer_class = UserProfileSerializer
+
+    def get_object(self):
+        username = self.kwargs.get('username'.lower())
+        profile = get_object_or_404(Profile, username=username)
+        return profile
+
+
 class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = UserProfileSerializer
