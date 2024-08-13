@@ -8,7 +8,7 @@ urlpatterns = [
 
     path('profile/create/', UserProfileCreateAPIView.as_view(), name='profile-create'),
     path('profile/list/', UserProfileListAPIView.as_view(), name='profile-list'),
-    path('profile/<str:username>/', UserProfileDetailAPIView.as_view(), name='profile-update-delete'),
+    path('profile/list/<str:username>/', UserProfileDetailAPIView.as_view(), name='profile-update-delete'),
     path('profile/<str:username>/', UserProfileUpdateDeleteAPIView.as_view(), name='profile-update-delete'),
     path('icons/', SocialMediaIconView.as_view()),
 ]
