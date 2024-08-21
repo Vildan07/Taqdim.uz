@@ -30,7 +30,11 @@ SECRET_KEY = 'django-insecure-a^k_i8$_4mnll)1fllra_5gc-6o)ertjvln)$7qduezjqtwmb6
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
+CSRF_TRUSTED_ORIGINS = [
+    'https://api.taqdim.uz',
+    'https://www.taqdim.uz',  # Include if you use www
+    'https://taqdim.uz',      # Include your main domain if needed
+]
 
 # Application definition
 
