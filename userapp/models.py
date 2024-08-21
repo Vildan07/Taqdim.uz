@@ -1,8 +1,16 @@
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
+from django.core.exceptions import ValidationError
+
 
 # Create your models here.
+
+def validate_pdf_size(value):
+    limit = 20 * 1024 * 1024  # 20 МБ в байтах
+    if value.size > limit:
+        raise ValidationError(f'Fayl juda katta. Maksimal fayl hajmi 20 MB.')
 
 
 class Profile(models.Model):
@@ -14,6 +22,12 @@ class Profile(models.Model):
     sites = models.JSONField(blank=True, null=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     about = models.TextField(blank=True)
+    pdf = models.FileField(
+        upload_to='pdfs/',
+        blank=True,
+        null=True,
+        validators=[FileExtensionValidator(['pdf']), validate_pdf_size]  # Добавьте валидатор
+    )
     qr_code = models.ImageField(upload_to='qr_codes/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
