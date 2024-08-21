@@ -57,17 +57,20 @@ class UserProfileDetailAPIView(generics.RetrieveAPIView):
 class UserProfileUpdateDeleteAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Profile.objects.all()
     serializer_class = UserProfileSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsOwnerOrReadOnly,)
     lookup_field = 'username'
+
+    def get_object(self):
+        username = self.kwargs.get('username').lower()
+        profile = get_object_or_404(Profile, username=username)
+
+        # Проверяем права доступа на уровне объекта
+        self.check_object_permissions(self.request, profile)
+
+        return profile
 
     def perform_update(self, serializer):
         serializer.save(user=self.request.user)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def get_object(self):
-        username = self.kwargs.get('username'.lower())
-        profile = get_object_or_404(Profile, username=username)
-        return profile
 
 
 class UserProfileListAPIView(generics.ListAPIView):
