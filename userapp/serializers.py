@@ -8,6 +8,12 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 User = get_user_model()
 
+class PasswordResetRequestSerializer(serializers.Serializer):
+    username = serializers.EmailField()
+
+class PasswordResetConfirmSerializer(serializers.Serializer):
+    code = serializers.CharField(min_length=1)
+    new_password = serializers.CharField(min_length=1)
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
     def validate(cls, attrs):

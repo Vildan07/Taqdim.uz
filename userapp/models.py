@@ -3,8 +3,9 @@ from django.db import models
 from django.conf import settings
 from django.utils.text import slugify
 from django.core.exceptions import ValidationError
+from django.contrib.auth import get_user_model
 
-
+User = get_user_model()
 # Create your models here.
 
 def validate_pdf_size(value):
@@ -45,3 +46,8 @@ class SocialMediaIcon(models.Model):
 
     def __str__(self):
         return self.url_pattern
+
+class PasswordResetCode(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=10)
+    created_at = models.DateTimeField(auto_now_add=True)

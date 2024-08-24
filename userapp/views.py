@@ -10,11 +10,16 @@ from rest_framework.response import Response
 from rest_framework import status
 
 from django.contrib.auth import get_user_model, authenticate
-
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view
+from django.utils import timezone
+from django.contrib.auth.hashers import make_password
+from .models import *
 from .serializers import *
 from .models import Profile
 from .permissions import IsOwnerOrReadOnly
-from .utils import generate_qr_code
+from .utils import *
 
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.views import TokenObtainPairView
@@ -106,3 +111,47 @@ class SocialMediaIconView(APIView):
 
         else:
             return Response({'error': 'Необходимо указать URL'}, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+@api_view(['POST'])
+def request_password_reset(request):
+    serializer = PasswordResetRequestSerializer(data=request.data)
+    if serializer.is_valid():
+        username = serializer.validated_data['username']
+        try:
+            user = User.objects.get(username=username)
+            code = PasswordResetCode.objects.create(
+                user=user,
+                code=generate_code()
+            )
+            # Send email with the reset code
+            send_mail(
+                'Password Reset Code',
+                f'Your password reset code is {code.code}',
+                settings.DEFAULT_FROM_EMAIL,
+                [username],
+                fail_silently=False,
+            )
+            return Response({'message': 'Password reset code sent'}, status=status.HTTP_200_OK)
+        except User.DoesNotExist:
+            return Response({'error': 'User with this email does not exist'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+def confirm_password_reset(request):
+    serializer = PasswordResetConfirmSerializer(data=request.data)
+    if serializer.is_valid():
+        code = serializer.validated_data['code']
+        new_password = serializer.validated_data['new_password']
+        try:
+            reset_code = PasswordResetCode.objects.get(code=code)
+            user = reset_code.user
+            user.password = make_password(new_password)
+            user.save()
+            reset_code.delete()  # Delete the used reset code
+            return Response({'message': 'Password reset successful'}, status=status.HTTP_200_OK)
+        except PasswordResetCode.DoesNotExist:
+            return Response({'error': 'Invalid reset code'}, status=status.HTTP_400_BAD_REQUEST)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
