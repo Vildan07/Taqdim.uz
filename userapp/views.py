@@ -128,9 +128,9 @@ def request_password_reset(request):
             )
             # Send email with the reset code
             send_mail(
-                'Password Reset Code',
-                f'Your password reset code is {code.code}',
-                settings.DEFAULT_FROM_EMAIL,
+                'Parolni yangilash',
+                f'Parolingizni yangilash uchun maxsus kod:  {code.code}',
+                f'Taqdim.uz <{settings.DEFAULT_FROM_EMAIL }>',
                 [username],
                 fail_silently=False,
             )
