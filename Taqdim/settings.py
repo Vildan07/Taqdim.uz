@@ -53,7 +53,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-BASE_URL = 'http://taqdim.uz'
+BASE_URL = 'https://taqdim.uz'
 
 CORS_ORIGIN_ALLOW_ALL = True
 
